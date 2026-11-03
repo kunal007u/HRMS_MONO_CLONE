@@ -1,11 +1,17 @@
 import React from 'react'
+import { useDispatch } from "react-redux";
+import {jwtDecode} from 'jwt-decode'; 
+import { adminLogin } from '../../Store/Slice/authSlice';
 import './login.css'
 import { BsEmojiSmileUpsideDown } from 'react-icons/bs';
 import { Field, Form, Formik } from 'formik';
 import FormikInput from '../../Shared/formik-fields/FormikInput';
 import { Button, IconButton, InputAdornment } from '@mui/material';
-import { Routing } from '../../Routes/routing';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import type { ILoginRequestModel } from '../../Model/account/accountM';
+import { useMutation } from '@tanstack/react-query';
+import accountService from '../../Services/account-service';
+import { toast } from 'react-toastify';
 
 const showHidePassword = (show: boolean, handleShowPassword: (show: boolean) => void) => (
     <IconButton
@@ -19,11 +25,31 @@ const showHidePassword = (show: boolean, handleShowPassword: (show: boolean) => 
     </IconButton>
 );
 const Login = () => {
+    const dispatch = useDispatch();
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleShowPassword = React.useCallback((show: boolean) => {
         setShowPassword(show);
     }, []);
+
+    const loginMutation = useMutation({
+        mutationFn: accountService.loginUser,
+        onSuccess: (response) => {
+            if (!response?.data?.data?.token) {
+                return;
+            }
+            const decode = jwtDecode(response?.data?.data?.token);
+            const newResponse = { ...decode, ...response?.data?.data }
+            if (response?.data?.status?.code) {
+                dispatch(adminLogin(newResponse));
+                toast.success(response?.data?.status?.message);
+                // permissionMutation.mutate();
+            }
+        },
+        onError: (error: Error) => { console.log(error?.message) },
+    });
+
+    const loginUser = (values: ILoginRequestModel) => loginMutation.mutate(values);
     return (
         <>
 
@@ -61,9 +87,8 @@ const Login = () => {
                         <Formik
                             initialValues={{ email: '', password: '' }}
                             onSubmit={(values) => {
-                                console.log(values);
-                            }
-                            }
+                                loginUser(values);
+                            }}
                         >
                             {({ values, handleChange, handleSubmit }) => (
                                 <Form className="l-form" onSubmit={handleSubmit}>
