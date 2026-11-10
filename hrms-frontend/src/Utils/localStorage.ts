@@ -21,6 +21,7 @@ export const loadStorage = (): IApplicationState | undefined => {
 };
 
 export const saveStorage = (state: IApplicationState) => {
+  console.log("state", state);
   try {
     const serializedState = JSON.stringify(state);
     return localStorage.setItem(

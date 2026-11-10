@@ -3,10 +3,12 @@ import { HttpStatusCode } from "../Shared/enums/https-status-code";
 import { toast } from "react-toastify";
 import messages from "../Shared/messages";
 import { camelizeKeys } from "../Utils/commanFunctions";
+import type { IApplicationState } from "../Store/state/app-state";
+import store from "../Store/store";
 
 axios.interceptors.request.use((config: any) => {
 
-    // const storeData: IApplicationState = store?.getState();
+    const storeData: IApplicationState = store.getState() as IApplicationState;
 
     if (config.url) {
         config.url = import.meta.env.VITE_BASE_URL + "/" + config.url;
@@ -14,8 +16,7 @@ axios.interceptors.request.use((config: any) => {
 
     config.headers = {
         ...config.headers,
-        // 'x-access-token': storeData?.UserData?.token,
-        'x-access-token':"12344"
+        'x-access-token': storeData?.UserData?.token,
     };
 
     return config;

@@ -83,7 +83,7 @@ const Employees = db.sequelize.define("employees", {
             // Hash the password before storing it in the database
             const salt = bcrypt.genSaltSync(12); // Generate a salt with 12 rounds
             const hashedPassword = bcrypt.hashSync(String(value), salt);
-            this.setDataValue("password", hashedPassword);
+            this.setDataValue("password", hashedPassword); 
         }
 
     },
