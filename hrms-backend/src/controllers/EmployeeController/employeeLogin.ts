@@ -6,6 +6,10 @@ import { statusCodes } from "../../utils/statusCodes.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 import jwt from "jsonwebtoken";
+import Role, { type RoleAttributes } from "../../model/roles.model.js";
+
+
+
 
 const TOKEN_MAXAGE = process.env.TOKEN_MAXAGE;
 const TOKEN_SECRET = process.env.TOKEN_SECRET || '';
@@ -19,14 +23,20 @@ const getUserByEmail = async (email: string) => {
     });
 };
 
-const generateToken = async (userData: any) => {
+const getRoleById = async (roleId: string) => {
+    return Role.findOne({
+        where: { id: roleId },
+    });
+};
+
+const generateToken = async (userData: any, role: RoleAttributes) => {
     const sessionId = uuid();
     await Employees.update({ sessionId }, { where: { id: userData.id } });
     return jwt.sign(
         {
             id: userData.id,
-            // roleId: userData.roleId,
-            // role: role.name,
+            roleId: userData.roleId,
+            role: role.name,
             employeeId: userData.id,
             employee_code: userData.employee_code,
             name: `${userData.firstName} ${userData.lastName}`,
@@ -85,7 +95,23 @@ const employeeLogin = async (req: any, res: any) => {
                 );
         }
 
-        const token = await generateToken(userData);
+        const role = await getRoleById(userData.roleId) as RoleAttributes | null;
+        if (!role) {
+            return res
+                .status(statusCodes.notFound)
+                .send(
+                    errorResponseFunc(
+                       {
+                            message: "Role not found.",
+                            error: "Such role does not exist.",
+                            code: statusCodes.notFound,
+                            type: constants.NOTFOUND
+                       }
+                    )
+                );
+        }
+
+        const token = await generateToken(userData, role);
         res.setHeader("token", token);
 
         const fullName = `${userData.firstName} ${userData.lastName}`;

@@ -87,6 +87,14 @@ const Employees = db.sequelize.define("employees", {
         }
 
     },
+    roleId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: "roles",
+            key: "id",
+        },
+    },
     employee_code: {
         type: DataTypes.STRING,
         allowNull: false,
