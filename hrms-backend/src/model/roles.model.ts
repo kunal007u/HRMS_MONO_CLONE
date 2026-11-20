@@ -1,13 +1,12 @@
 import { DataTypes } from "sequelize";
 import db from "../../config/database.js"
 
-
-
 export type RoleAttributes = {
     id: string;
     name: string;
     isActive: boolean;
 }
+
 const Role = db.sequelize.define("roles", {
     id:{
         type: DataTypes.UUID,

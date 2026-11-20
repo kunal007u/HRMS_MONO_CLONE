@@ -43,10 +43,22 @@ const Login = () => {
             if (response?.data?.status?.code) {
                 dispatch(adminLogin(newResponse));
                 toast.success(response?.data?.status?.message);
-                // permissionMutation.mutate();
+                permissionMutation.mutate();
             }
         },
         onError: (error: Error) => { console.log(error?.message) },
+    });
+
+
+    const permissionMutation = useMutation({
+        mutationFn: accountService.readPermission,
+        onSuccess: (response) => {
+            if (response?.data?.status) {
+                console.log("Permission Response", response?.data?.data);
+                // dispatch(updatePermission(response?.data?.data));
+            }
+        },
+        onError: (error: Error) => console.log(error?.message),
     });
 
     const loginUser = (values: ILoginRequestModel) => loginMutation.mutate(values);

@@ -8,9 +8,6 @@ import { v4 as uuid } from "uuid";
 import jwt from "jsonwebtoken";
 import Role, { type RoleAttributes } from "../../model/roles.model.js";
 
-
-
-
 const TOKEN_MAXAGE = process.env.TOKEN_MAXAGE;
 const TOKEN_SECRET = process.env.TOKEN_SECRET || '';
 
