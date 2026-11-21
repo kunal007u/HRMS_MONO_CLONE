@@ -9,6 +9,7 @@ interface MenuRoute {
     name: string;
     priority: number;
     parentRouteId: string | null;
+    path: string | null;
 }
 
 export const readPermission = async (req: any, res: any) => {
@@ -46,6 +47,7 @@ export const readPermission = async (req: any, res: any) => {
                     name: route.name,
                     priority: route.priority,
                     childRoute: buildTree(routes, route.id),
+                    path: route.path,
                 }));
         };
 

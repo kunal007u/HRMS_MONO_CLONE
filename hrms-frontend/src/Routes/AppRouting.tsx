@@ -12,12 +12,19 @@ const router = createBrowserRouter([
         element: <PublicLayout />,
         children: [
             {
-                path: "/login",
+                path: Routing.Login,
                 lazy: () =>
                     import("../pages/Accounts/Login").then((module) => ({
                         Component: module.default,
                     })),
             },
+            {
+                path: Routing.AdminDashboard,
+                lazy: () =>
+                    import("../pages/Admin_Dashbord/Admin_Dashbord").then((module) => ({
+                        Component: module.default,
+                    })),
+            }
             // {
             //     path: "/forgot-password",
             //     lazy: () => import("../pages/auth/forgot-password.route"),

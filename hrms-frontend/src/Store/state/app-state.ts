@@ -1,4 +1,5 @@
 import { ISidebarData } from "../../Layout/Sidebar/sidebar-data";
+import type { IPermissionRoute } from "../../Model/permission/permissionM";
 
 export interface IApplicationState {
     UserData?: IAuthState;
@@ -16,4 +17,5 @@ export interface IAuthState {
     designation?: string;
     reportingPerson?: string;
     employee_code?: string;
+    permissions?: IPermissionRoute[];
 }

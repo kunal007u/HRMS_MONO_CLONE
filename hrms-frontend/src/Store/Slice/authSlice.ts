@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { IAuthState } from "../state/app-state";
+import type { IPermissionRoute } from "../../Model/permission/permissionM";
 
 const initialState: IAuthState = {
     id: 0,
@@ -13,6 +14,7 @@ const initialState: IAuthState = {
     designation: "",
     reportingPerson: "",
     employee_code: "",
+    permissions: []
 };
 
 const authSlice = createSlice({
@@ -34,9 +36,12 @@ const authSlice = createSlice({
 
         adminLogout: () => initialState,
 
+        updatePermission: (state, action: PayloadAction<IPermissionRoute[]>) => {
+            state.permissions = action.payload ?? [];
+        }
 
     }
 });
 
-export const { adminLogin, adminLogout } = authSlice.actions;
+export const { adminLogin, adminLogout, updatePermission } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useDispatch } from "react-redux";
 import {jwtDecode} from 'jwt-decode'; 
-import { adminLogin } from '../../Store/Slice/authSlice';
+import { adminLogin, updatePermission } from '../../Store/Slice/authSlice';
 import './login.css'
 import { BsEmojiSmileUpsideDown } from 'react-icons/bs';
 import { Field, Form, Formik } from 'formik';
@@ -12,6 +12,9 @@ import type { ILoginRequestModel } from '../../Model/account/accountM';
 import { useMutation } from '@tanstack/react-query';
 import accountService from '../../Services/account-service';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
+import { Routing } from '../../Routes/routing';
+import { getFirstPermittedPath } from '../../Utils/commanFunctions';
 
 const showHidePassword = (show: boolean, handleShowPassword: (show: boolean) => void) => (
     <IconButton
@@ -26,8 +29,10 @@ const showHidePassword = (show: boolean, handleShowPassword: (show: boolean) => 
 );
 const Login = () => {
     const dispatch = useDispatch();
-    const [showPassword, setShowPassword] = React.useState(false);
+    const navigate = useNavigate();
 
+    const [showPassword, setShowPassword] = React.useState(false);
+    
     const handleShowPassword = React.useCallback((show: boolean) => {
         setShowPassword(show);
     }, []);
@@ -53,9 +58,17 @@ const Login = () => {
     const permissionMutation = useMutation({
         mutationFn: accountService.readPermission,
         onSuccess: (response) => {
-            if (response?.data?.status) {
-                console.log("Permission Response", response?.data?.data);
-                // dispatch(updatePermission(response?.data?.data));
+            const permissions = response?.data?.data;
+
+            if (Array.isArray(permissions)) {
+                dispatch(updatePermission(permissions));
+                const destination = getFirstPermittedPath(permissions);
+                if (destination) {
+                    navigate(destination);
+                } else {
+                    toast.error("No permitted path found.");
+                }
+                // navigate(Routing.AdminDashboard);
             }
         },
         onError: (error: Error) => console.log(error?.message),
