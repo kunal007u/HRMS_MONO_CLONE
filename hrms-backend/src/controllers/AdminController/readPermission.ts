@@ -4,6 +4,13 @@ import { constants } from "../../utils/constants.js";
 import { errorResponseFunc } from "../../utils/responseFunction.js";
 import { statusCodes } from "../../utils/statusCodes.js";
 
+interface MenuRoute {
+    id: string;
+    name: string;
+    priority: number;
+    parentRouteId: string | null;
+}
+
 export const readPermission = async (req: any, res: any) => {
     const id = req.roleId;
 
@@ -14,23 +21,41 @@ export const readPermission = async (req: any, res: any) => {
                 error: "Role ID is missing in the request",
                 code: statusCodes.unauthorized,
                 type: "error",
-                
+
             }
             )
         );
-    }else{
+    } else {
         const permission = await Permissions.findAll({
-            where:{roleId:id, canRead: true},
+            where: { roleId: id, canRead: true },
             attributes: ['canRead'],
             include: [{
                 model: Route,
                 where: { isActive: constants.ACTIVE },
-                attributes:{ exclude: ['createdAt', 'updatedAt']}
+                attributes: { exclude: ['createdAt', 'updatedAt'] }
             }]
         })
 
-        return res.status(200).json({
-            data: permission,
+
+        const buildTree = (routes: MenuRoute[],parentId: string | null = null): object[] => {
+            return routes
+                .filter((route) => route.parentRouteId === parentId)
+                .sort((a, b) => a.priority - b.priority)
+                .map((route) => ({
+                    id: route.id,
+                    name: route.name,
+                    priority: route.priority,
+                    childRoute: buildTree(routes, route.id),
+                }));
+        };
+
+        const menuTree = buildTree(permission.map((perm: any) => perm.route as MenuRoute));
+
+        return res.status(statusCodes.success).send({
+            message: "Permission fetched successfully",
+            data: menuTree,
+            code: statusCodes.success,
+            type: "success",
         });
     }
 }
