@@ -33,3 +33,15 @@ export const getFirstPermittedPath = (routes: IPermissionRoute[]): string | null
 
     return null;
 };
+
+export const hasActiveRoute = (
+    route: IPermissionRoute,
+    pathname: string
+): boolean => {
+    return (
+        route.path === pathname ||
+        route.childRoute.some((child) =>
+            hasActiveRoute(child, pathname)
+        )
+    );
+};

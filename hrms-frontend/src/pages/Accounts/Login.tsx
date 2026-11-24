@@ -13,7 +13,6 @@ import { useMutation } from '@tanstack/react-query';
 import accountService from '../../Services/account-service';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
-import { Routing } from '../../Routes/routing';
 import { getFirstPermittedPath } from '../../Utils/commanFunctions';
 
 const showHidePassword = (show: boolean, handleShowPassword: (show: boolean) => void) => (
