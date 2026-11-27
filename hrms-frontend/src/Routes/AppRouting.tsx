@@ -36,7 +36,22 @@ const router = createBrowserRouter([
                                 Component: module.default,
                             })),
                     },
+                    {
+                        path: Routing.AllEmployee,
+                        lazy: () =>
+                            import("../pages/Employee/All-Employee").then((module) => ({
+                                Component: module.default,
+                            })),
+                    },
+                    {   
+                        path: Routing.PersonalDetails,
+                        lazy: () =>
+                            import("../pages/Employee/PersonalDetails").then((module) => ({
+                                Component: module.default,
+                            })),
+                    }
                 ],
+            
             }
         ]
     }
